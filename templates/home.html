@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Home - Job Portal{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* General Body and Font Styles */
+        body {
+            font-family: 'Inter', sans-serif; /* Using Inter font */
+            margin: 0;
+            background-color: #f0f2f5; /* Lighter background for a modern feel */
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Container for content */
+        .container {
+            max-width: 1100px; /* Slightly wider container */
+            margin: 30px auto; /* More vertical margin */
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 12px; /* More rounded corners */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* More prominent shadow */
+        }
+
+        /* Page Title */
+        h1 {
+            text-align: center;
+            color: #2c3e50; /* Darker, more professional blue */
+            margin-bottom: 35px;
+            font-size: 2.5em;
+            font-weight: 700; /* Bolder title */
+            position: relative;
+        }
+        h1::after { /* Underline effect for heading */
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background-color: #007bff;
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: separate; /* Use separate to allow border-radius on cells */
+            border-spacing: 0; /* Remove default spacing */
+            margin-top: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* Subtle shadow for table */
+            border-radius: 10px; /* Rounded corners for the entire table */
+            overflow: hidden; /* Ensures rounded corners apply to content */
+        }
+        th, td {
+            border-bottom: 1px solid #e9ecef; /* Lighter, subtle bottom border */
+            padding: 15px 20px; /* Increased padding */
+            text-align: left;
+            vertical-align: middle; /* Align content vertically */
+        }
+        th {
+            background-color: #f8f9fa; /* Lighter header background */
+            color: #555;
+            font-weight: 600; /* Semi-bold header */
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 0.5px;
+        }
+        /* Rounded corners for first and last header cells */
+        th:first-child { border-top-left-radius: 10px; }
+        th:last-child { border-top-right-radius: 10px; }
+
+        tr:last-child td { /* Remove bottom border for last row cells */
+            border-bottom: none;
+        }
+
+        tr:nth-child(even) {
+            background-color: #fdfdfd; /* Very subtle zebra striping */
+        }
+        tr:hover {
+            background-color: #e6f7ff; /* Light blue highlight on hover */
+            transition: background-color 0.2s ease-in-out;
+        }
+        
+        /* Job Title Link */
+        td a {
+            color: #007bff; /* Primary blue for links */
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease, text-decoration 0.2s ease;
+        }
+        td a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+        /* Action Buttons */
+        .action-links {
+            display: flex;
+            gap: 8px; /* Slightly less gap */
+            flex-wrap: wrap;
+            justify-content: flex-start; /* Align buttons to start */
+        }
+        .action-links .btn {
+            display: inline-flex; /* Use flex for vertical alignment of text/icons */
+            align-items: center;
+            justify-content: center;
+            padding: 10px 18px; /* More padding for buttons */
+            border-radius: 25px; /* Pill-shaped buttons */
+            text-decoration: none;
+            font-size: 0.85em; /* Slightly smaller font for buttons */
+            font-weight: 600;
+            white-space: nowrap;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Button shadow */
+            transition: all 0.3s ease; /* Smooth transitions */
+        }
+        .btn-info { /* View Details button */
+            background-color: #6c757d; /* Muted grey */
+            color: white;
+            border: 1px solid #6c757d;
+        }
+        .btn-info:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+            transform: translateY(-2px); /* Lift effect on hover */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .btn-success { /* Apply Now button */
+            background-color: #28a745; /* Green */
+            color: white;
+            border: 1px solid #28a745;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        /* No Jobs Message */
+        .no-jobs {
+            text-align: center;
+            color: #777;
+            padding: 40px 20px;
+            font-size: 1.2em;
+            background-color: #fefefe;
+            border: 1px dashed #ced4da;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+
+        /* Responsive adjustments for table (existing, but reviewed) */
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px 15px; /* Adjust container margin for smaller screens */
+                padding: 20px;
+            }
+            h1 {
+                font-size: 2em;
+            }
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+            tr {
+                border: 1px solid #e0e0e0;
+                margin-bottom: 15px; /* More space between stacked rows */
+                border-radius: 10px;
+                overflow: hidden;
+            }
+            td {
+                border: none; /* Remove individual cell borders when stacked */
+                border-bottom: 1px solid #e9ecef; /* Keep bottom border for separation */
+                position: relative;
+                padding-left: 45%; /* Adjusted padding for labels */
+                text-align: right;
+            }
+            td:last-child {
+                border-bottom: 0;
+            }
+            td:before {
+                position: absolute;
+                top: 15px; /* Align label vertically */
+                left: 15px; /* More left padding for labels */
+                width: 40%; /* Adjusted width */
+                padding-right: 10px;
+                white-space: nowrap;
+                text-align: left;
+                font-weight: 700; /* Bolder labels */
+                color: #555;
+            }
+            /* Data labels for responsive table */
+            td:nth-of-type(1):before { content: "Title:"; }
+            td:nth-of-type(2):before { content: "Company:"; }
+            td:nth-of-type(3):before { content: "Location:"; }
+            td:nth-of-type(4):before { content: "Salary:"; }
+            td:nth-of-type(5):before { content: "Posted On:"; }
+            td:nth-of-type(6):before { content: "Actions:"; }
+
+            .action-links {
+                justify-content: center; /* Center buttons when stacked */
+                padding: 10px 0; /* Add padding for actions section */
+                border-top: 1px solid #e9ecef; /* Separator for actions */
+                margin-top: 10px; /* Space from content above */
+            }
+        }
+    </style>
+</head>
+<body>
+    {# The base.html content (navbar, flash messages) will be inserted here #}
+    {% include 'base.html' %} 
+
+    <div class="container">
+        <h1>Available Jobs</h1>
+
+        {# Flash messages display block, assuming base.html doesn't already handle it for top-level pages #}
+        {# If base.html already handles flash messages globally, you might remove this block here to avoid duplication #}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flashes">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% if jobs %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Job Title</th>
+                        <th>Company</th>
+                        <th>Location</th>
+                        <th>Salary</th>
+                        <th>Posted On</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for job in jobs %}
+                    <tr>
+                        <td><a href="{{ url_for('job_detail', job_id=job.id) }}">{{ job.title }}</a></td>
+                        <td>{{ job.company }}</td>
+                        <td>{{ job.location }}</td>
+                        <td>{{ job.salary if job.salary else 'N/A' }}</td>
+                        <td>{{ job.date_posted.strftime('%Y-%m-%d') }}</td>
+                        <td class="action-links">
+                            <a href="{{ url_for('job_detail', job_id=job.id) }}" class="btn btn-info">View Details</a>
+                            {% if current_user.is_authenticated and current_user.role == 'job_seeker' %}
+                                <a href="{{ url_for('apply_job', job_id=job.id) }}" class="btn btn-success">Apply Now</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="no-jobs">No jobs posted yet.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
+

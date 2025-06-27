@@ -1,0 +1,27 @@
+{# This template is conceptually here for completeness but the application logic for applying
+   is directly handled via a POST request on the job_detail.html page.
+   A dedicated 'apply_job.html' would be used if there were a complex application form. #}
+
+{% extends 'base.html' %}
+
+{% block title %}Apply for Job{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg p-4 mt-5 rounded-lg">
+            <h2 class="card-title text-center mb-4 display-5">Apply for Job</h2>
+            <p class="text-center">You are about to apply for the job: <strong>{{ job.title }}</strong> at <strong>{{ job.company }}</strong>.</p>
+            <form action="{{ url_for('apply_job', job_id=job.id) }}" method="POST">
+                <div class="mb-4 text-center">
+                    <p>Are you sure you want to submit your application?</p>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 btn-lg rounded shadow-sm">Confirm Application</button>
+            </form>
+            <p class="text-center mt-3">
+                <a href="{{ url_for('job_detail', job_id=job.id) }}">Go back to Job Details</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

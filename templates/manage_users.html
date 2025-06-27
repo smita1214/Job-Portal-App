@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Users - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="admin-header text-center my-5 p-4 bg-dark text-white rounded-lg shadow-lg">
+    <h1 class="display-4">Manage Users</h1>
+    <p class="lead">View and delete user accounts.</p>
+</div>
+
+<div class="card shadow-sm rounded-lg">
+    <div class="card-header bg-primary text-white rounded-top-lg">
+        <h4 class="mb-0">All Registered Users</h4>
+    </div>
+    <div class="card-body">
+        {% if users %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Username</th>
+                            <th scope="col">Role</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.id }}</td>
+                            <td>{{ user.username }}</td>
+                            <td><span class="badge bg-{% if user.role == 'admin' %}danger{% elif user.role == 'employer' %}info{% else %}success{% endif %}">{{ user.role.replace('_', ' ').title() }}</span></td>
+                            <td>
+                                {% if user.role != 'admin' %} {# Prevent admin from deleting themselves accidentally #}
+                                <form action="{{ url_for('delete_user', user_id=user.id) }}" method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-danger btn-sm rounded-pill shadow-sm" onclick="return confirm('Are you sure you want to delete user {{ user.username }}? This action cannot be undone and will also delete their jobs/applications.')">Delete</button>
+                                </form>
+                                {% else %}
+                                <button class="btn btn-secondary btn-sm rounded-pill" disabled>Cannot Delete Admin</button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center rounded p-3" role="alert">
+                No users found.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

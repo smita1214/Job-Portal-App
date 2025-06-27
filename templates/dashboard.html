@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}My Dashboard - Job Portal{% endblock %}
+
+{% block content %}
+<div class="dashboard-header text-center my-5 p-4 bg-primary text-white rounded-lg shadow-lg">
+    <h1 class="display-3">Welcome, {{ session['username'] }}!</h1>
+    <p class="lead">Your Role: <span class="badge bg-light text-dark fs-5 rounded-pill">{{ user_role.replace('_', ' ').title() }}</span></p>
+</div>
+
+{% if user_role == 'employer' %}
+    <div class="row mb-5">
+        <div class="col-md-12">
+            <div class="card shadow-sm rounded-lg">
+                <div class="card-header bg-success text-white rounded-top-lg">
+                    <h4 class="mb-0">Your Posted Jobs <a href="{{ url_for('post_job') }}" class="btn btn-light btn-sm float-end rounded-pill shadow-sm">Post New Job</a></h4>
+                </div>
+                <div class="card-body">
+                    {% if jobs_posted %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">Title</th>
+                                        <th scope="col">Location</th>
+                                        <th scope="col">Category</th>
+                                        <th scope="col">Salary</th>
+                                        <th scope="col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for job in jobs_posted %}
+                                    <tr>
+                                        <td><a href="{{ url_for('job_detail', job_id=job.id) }}" class="text-primary fw-bold">{{ job.title }}</a></td>
+                                        <td>{{ job.location }}</td>
+                                        <td>{{ job.category }}</td>
+                                        <td>{{ job.salary or 'N/A' }}</td>
+                                        <td>
+                                            {# For a full app, here you'd add Edit/Delete functionality #}
+                                            <a href="{{ url_for('job_detail', job_id=job.id) }}" class="btn btn-info btn-sm rounded-pill shadow-sm">View</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info text-center rounded p-3" role="alert">
+                            You haven't posted any jobs yet.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm rounded-lg">
+                <div class="card-header bg-warning text-dark rounded-top-lg">
+                    <h4 class="mb-0">Applications Received</h4>
+                </div>
+                <div class="card-body">
+                    {% if applications_received %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">Job Title</th>
+                                        <th scope="col">Applicant</th>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for app in applications_received %}
+                                    <tr>
+                                        <td><a href="{{ url_for('job_detail', job_id=app.job_id) }}" class="text-primary">{{ app.job_title }}</a></td>
+                                        <td>{{ app.seeker_username }}</td>
+                                        <td>{{ app.application_date }}</td>
+                                        <td>
+                                            <span class="badge rounded-pill bg-{% if app.status == 'pending' %}secondary{% elif app.status == 'accepted' %}success{% else %}danger{% endif %}">
+                                                {{ app.status.title() }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <form action="{{ url_for('update_application_status', application_id=app.id) }}" method="POST" class="d-inline">
+                                                <select name="status" class="form-select form-select-sm d-inline-block w-auto rounded me-2">
+                                                    <option value="pending" {% if app.status == 'pending' %}selected{% endif %}>Pending</option>
+                                                    <option value="accepted" {% if app.status == 'accepted' %}selected{% endif %}>Accepted</option>
+                                                    <option value="rejected" {% if app.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                                                </select>
+                                                <button type="submit" class="btn btn-sm btn-primary rounded-pill shadow-sm">Update</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info text-center rounded p-3" role="alert">
+                            No applications received yet.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% elif user_role == 'job_seeker' %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm rounded-lg">
+                <div class="card-header bg-primary text-white rounded-top-lg">
+                    <h4 class="mb-0">Your Job Applications</h4>
+                </div>
+                <div class="card-body">
+                    {% if applications_made %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">Job Title</th>
+                                        <th scope="col">Company</th>
+                                        <th scope="col">Location</th>
+                                        <th scope="col">Application Date</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for app in applications_made %}
+                                    <tr>
+                                        <td><a href="{{ url_for('job_detail', job_id=app.job_id) }}" class="text-primary fw-bold">{{ app.job_title }}</a></td>
+                                        <td>{{ app.company }}</td>
+                                        <td>{{ app.location }}</td>
+                                        <td>{{ app.application_date }}</td>
+                                        <td>
+                                            <span class="badge rounded-pill bg-{% if app.status == 'pending' %}secondary{% elif app.status == 'accepted' %}success{% else %}danger{% endif %}">
+                                                {{ app.status.title() }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('job_detail', job_id=app.job_id) }}" class="btn btn-info btn-sm rounded-pill shadow-sm">View Job</a>
+                                            {# Optionally add a withdraw application button here #}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info text-center rounded p-3" role="alert">
+                            You haven't applied for any jobs yet. Start by <a href="{{ url_for('index') }}">browsing jobs</a>!
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% endblock %}

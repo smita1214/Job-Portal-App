@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}Applicants for {{ job.title }}{% endblock %}
+
+{% block content %}
+    <h1>Applicants for "{{ job.title }}"</h1>
+
+    {% if applications %}
+        <table class="applications-table">
+            <thead>
+                <tr>
+                    <th>Applicant Name</th>
+                    <th>Applicant Email</th>
+                    <th>Application Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for app in applications %}
+                    <tr>
+                        <td data-label="Applicant Name:">{{ app.job_seeker.username }}</td>
+                        <td data-label="Applicant Email:"><a href="mailto:{{ app.job_seeker.email }}">{{ app.job_seeker.email }}</a></td>
+                        <td data-label="Application Date:">{{ app.application_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td data-label="Status:">
+                            <span class="status-badge status-{{ app.status | lower }}">{{ app.status.replace('_', ' ').title() }}</span>
+                        </td>
+                        <td data-label="Actions:" class="table-actions">
+                            <form action="{{ url_for('update_application_status', application_id=app.id) }}" method="POST" style="display:inline-block;">
+                                <select name="status" onchange="this.form.submit()" class="form-control btn-sm">
+                                    <option value="pending" {% if app.status == 'pending' %}selected{% endif %}>Pending</option>
+                                    <option value="reviewed" {% if app.status == 'reviewed' %}selected{% endif %}>Reviewed</option>
+                                    <option value="accepted" {% if app.status == 'accepted' %}selected{% endif %}>Accepted</option>
+                                    <option value="rejected" {% if app.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                                </select>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="no-jobs">No applicants for this job yet.</p>
+    {% endif %}
+
+    <div style="text-align: center; margin-top: 30px;">
+        <a href="{{ url_for('my_jobs') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to My Jobs</a>
+    </div>
+{% endblock %}
+
+{% block head_extra %}
+<style>
+    /* Specific styles for status badges (copied from my_applications for consistency) */
+    .status-badge {
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-weight: 600;
+        font-size: 0.85em;
+        display: inline-block;
+    }
+    .status-pending {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+    .status-reviewed {
+        background-color: #d1ecf1;
+        color: #0c5460;
+    }
+    .status-accepted {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    .status-rejected {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    /* Small button/select for table actions */
+    .btn-sm {
+        padding: 6px 10px;
+        font-size: 0.85em;
+    }
+    .form-control { /* Basic styling for select dropdown */
+        display: block;
+        width: 100%;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: #495057;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+</style>
+{% endblock %}

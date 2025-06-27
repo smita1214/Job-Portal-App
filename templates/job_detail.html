@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ job.title }} - Job Portal{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-9 col-lg-8">
+        <div class="card shadow-lg p-5 mt-5 rounded-lg">
+            <h1 class="card-title display-4 text-primary mb-3">{{ job.title }}</h1>
+            <h3 class="card-subtitle mb-3 text-muted">{{ job.company }} - {{ job.location }}</h3>
+
+            <div class="mb-4">
+                <span class="badge bg-info text-dark me-2 rounded-pill p-2">Category: {{ job.category }}</span>
+                <span class="badge bg-success me-2 rounded-pill p-2">Salary: {{ job.salary or 'Negotiable' }}</span>
+                <span class="badge bg-secondary rounded-pill p-2">Posted by: {{ job.employer_username }}</span>
+            </div>
+
+            <h4 class="mt-4 mb-2">Job Description</h4>
+            <div class="card-text description-box p-3 rounded bg-light mb-4">
+                {{ job.description | replace('\n', '<br>') | safe }}
+            </div>
+
+            {% if session.get('role') == 'job_seeker' %}
+                {% if has_applied %}
+                    <div class="alert alert-success text-center rounded" role="alert">
+                        You have already applied for this job.
+                    </div>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary w-100 rounded-pill shadow-sm mt-3">View My Applications</a>
+                {% else %}
+                    <form action="{{ url_for('apply_job', job_id=job.id) }}" method="POST">
+                        <button type="submit" class="btn btn-primary w-100 btn-lg rounded-pill shadow-sm">Apply for this Job</button>
+                    </form>
+                {% endif %}
+            {% elif session.get('role') == 'employer' and session.get('user_id') == job.employer_id %}
+                <div class="alert alert-info text-center rounded" role="alert">
+                    This is one of your job listings. You cannot apply.
+                </div>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary w-100 rounded-pill shadow-sm mt-3">Manage My Jobs</a>
+            {% else %}
+                <div class="alert alert-warning text-center rounded" role="alert">
+                    Please <a href="{{ url_for('login') }}">login</a> as a Job Seeker to apply.
+                </div>
+            {% endif %}
+
+            <div class="mt-4 text-center">
+                <a href="{{ url_for('index') }}" class="btn btn-link">Back to Job Listings</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply for {{ job.title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* Basic inline styles */
+        .container {
+            max-width: 700px;
+            margin: 20px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #0056b3;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="url"],
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box; /* Include padding in width */
+            font-size: 1em;
+        }
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        .btn-primary {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .job-info {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            border-left: 5px solid #007bff;
+        }
+        .job-info h2 {
+            margin-top: 0;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    {% include 'base.html' %}
+
+    <div class="container">
+        <h1>Apply for Job</h1>
+        
+        <div class="job-info">
+            <h2>{{ job.title }}</h2>
+            <p><strong>Company:</strong> {{ job.company }}</p>
+            <p><strong>Location:</strong> {{ job.location }}</p>
+            <p>{{ job.description }}</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flashes">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <div class="form-group">
+                <label for="resume_link">Resume Link (e.g., Google Drive, Dropbox link to PDF):</label>
+                <input type="url" id="resume_link" name="resume_link" placeholder="https://your_resume_link.pdf" required>
+            </div>
+            <div class="form-group">
+                <label for="cover_letter">Cover Letter (Optional):</label>
+                <textarea id="cover_letter" name="cover_letter" rows="8" placeholder="Write your cover letter here..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Application</button>
+        </form>
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="{{ url_for('job_detail', job_id=job.id) }}" class="btn btn-secondary">Back to Job Details</a>
+        </div>
+    </div>
+</body>
+</html>

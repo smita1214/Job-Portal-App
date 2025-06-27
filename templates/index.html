@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Job Listings - Job Portal{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm rounded mb-4 p-4">
+    <h1 class="text-center mb-4 display-4">Find Your Dream Job</h1>
+    <form class="row g-3 align-items-center" action="{{ url_for('index') }}" method="GET">
+        <div class="col-md-5">
+            <label for="search" class="visually-hidden">Search by Title or Description</label>
+            <input type="text" class="form-control form-control-lg rounded" id="search" name="search" placeholder="Search by title or description" value="{{ search_query }}">
+        </div>
+        <div class="col-md-2">
+            <label for="location" class="visually-hidden">Location</label>
+            <input type="text" class="form-control form-control-lg rounded" id="location" name="location" placeholder="Location" value="{{ location_filter }}">
+        </div>
+        <div class="col-md-2">
+            <label for="category" class="visually-hidden">Category</label>
+            <input type="text" class="form-control form-control-lg rounded" id="category" name="category" placeholder="Category" value="{{ category_filter }}">
+        </div>
+        <div class="col-md-2">
+            <label for="company" class="visually-hidden">Company</label>
+            <input type="text" class="form-control form-control-lg rounded" id="company" name="company" placeholder="Company" value="{{ company_filter }}">
+        </div>
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-primary w-100 btn-lg rounded shadow-sm">Search</button>
+        </div>
+    </form>
+</div>
+
+<h2 class="mb-3">Available Job Listings</h2>
+{% if jobs %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for job in jobs %}
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0 rounded-lg job-card">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">{{ job.title }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ job.company }} - {{ job.location }}</h6>
+                    <p class="card-text text-truncate">{{ job.description }}</p>
+                    <ul class="list-unstyled mb-0">
+                        <li><strong>Category:</strong> {{ job.category }}</li>
+                        <li><strong>Salary:</strong> {{ job.salary or 'Negotiable' }}</li>
+                        <li><strong>Posted by:</strong> {{ job.employer_username }}</li>
+                    </ul>
+                </div>
+                <div class="card-footer bg-transparent border-top-0">
+                    <a href="{{ url_for('job_detail', job_id=job.id) }}" class="btn btn-outline-primary btn-sm rounded-pill w-100 shadow-sm">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info text-center rounded p-3" role="alert">
+        No job listings found matching your criteria.
+    </div>
+{% endif %}
+{% endblock %}
